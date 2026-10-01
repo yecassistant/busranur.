@@ -8,9 +8,7 @@
   var state = {};
   new URLSearchParams(location.search).forEach(function (v, k) { state[k] = v; });
 
-  /* ---------- sayfa geçişi ---------- */
-  document.body.classList.add("entering");
-  requestAnimationFrame(function () { requestAnimationFrame(function () { document.body.classList.remove("entering"); }); });
+  /* ---------- sayfa geçişi (giriş animasyonu CSS'te, JS gerekmez) ---------- */
   function go(url, add) {
     var p = new URLSearchParams();
     var all = Object.assign({}, state, add || {});
@@ -19,7 +17,7 @@
     document.body.classList.add("leaving");
     setTimeout(function () { location.href = url + (q ? "?" + q : ""); }, 420);
   }
-  window.addEventListener("pageshow", function (e) { if (e.persisted) document.body.classList.remove("leaving"); });
+  window.addEventListener("pageshow", function (e) { if (e.persisted) { document.body.classList.remove("leaving"); document.body.style.opacity = "1"; } });
 
   /* ---------- çiçek çizimleri ---------- */
   function lavender(c1, c2) {
@@ -109,7 +107,7 @@
     parts.forEach(function (p, i) {
       var el = svgEl(p[0], p[3] * scale, p[4] * scale);
       el.style.left = p[1] * scale + "px"; el.style.top = p[2] * scale + "px";
-      el.style.rotate = p[5] + "deg"; el.style.animationDelay = (i * 0.07) + "s, " + (1 + i * 0.2) + "s";
+      el.style.setProperty("--r", p[5] + "deg"); el.style.animationDelay = (i * 0.07) + "s, " + (1 + i * 0.2) + "s";
       b.appendChild(el);
     });
   });
@@ -240,6 +238,7 @@
 
   /* 4 · Menü */
   if (page === "secim") {
+    if (!state.t) state.t = "kahve";
     var isK = state.t !== "yemek";
     $("title").innerHTML = isK ? "Hangi <em>kahve</em> olsun?" : "Ne <em>yiyelim</em>?";
     $("sub").textContent = isK ? "Kahve benden, sohbet senden." : "Canın ne çekiyorsa, hesap benden.";
