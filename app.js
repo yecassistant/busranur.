@@ -1,0 +1,288 @@
+/* Resmin Teslimatı – ortak kod
+   Seçimler sayfadan sayfaya adres çubuğundaki parametrelerle taşınır:
+   t = kahve|yemek, m = menü, g = gün, s = saat, n = not */
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var page = document.body.dataset.page;
+  var state = {};
+  new URLSearchParams(location.search).forEach(function (v, k) { state[k] = v; });
+
+  /* ---------- sayfa geçişi ---------- */
+  document.body.classList.add("entering");
+  requestAnimationFrame(function () { requestAnimationFrame(function () { document.body.classList.remove("entering"); }); });
+  function go(url, add) {
+    var p = new URLSearchParams();
+    var all = Object.assign({}, state, add || {});
+    Object.keys(all).forEach(function (k) { if (all[k] !== undefined && all[k] !== "") p.set(k, all[k]); });
+    var q = p.toString();
+    document.body.classList.add("leaving");
+    setTimeout(function () { location.href = url + (q ? "?" + q : ""); }, 420);
+  }
+  window.addEventListener("pageshow", function (e) { if (e.persisted) document.body.classList.remove("leaving"); });
+
+  /* ---------- çiçek çizimleri ---------- */
+  function lavender(c1, c2) {
+    var s = '<svg viewBox="0 0 60 140" width="W" height="H" xmlns="http://www.w3.org/2000/svg"><path d="M30 140 Q28 80 30 20" stroke="#6fa77f" stroke-width="3" fill="none"/>';
+    s += '<path d="M30 112 Q12 100 8 84 Q24 90 30 106Z" fill="#7fb68f"/><path d="M30 124 Q46 114 52 100 Q36 104 30 118Z" fill="#8cc29b"/>';
+    for (var i = 0; i < 10; i++) {
+      var y = 20 + i * 8.5, dx = (i % 2 ? 7 : -7), r = 6.2 - i * 0.25;
+      s += '<ellipse cx="' + (30 + dx) + '" cy="' + y + '" rx="' + r + '" ry="' + (r * 1.35) + '" fill="' + (i % 2 ? c1 : c2) + '" transform="rotate(' + (dx > 0 ? 25 : -25) + ' ' + (30 + dx) + ' ' + y + ')"/>';
+    }
+    return s + '<ellipse cx="30" cy="12" rx="5" ry="8" fill="' + c1 + '"/></svg>';
+  }
+  function peony(c1, c2, c3) {
+    var s = '<svg viewBox="0 0 120 120" width="W" height="H" xmlns="http://www.w3.org/2000/svg">', i;
+    for (i = 0; i < 10; i++) s += '<ellipse cx="60" cy="30" rx="24" ry="30" fill="' + c1 + '" transform="rotate(' + (i * 36) + ' 60 60)"/>';
+    for (i = 0; i < 8; i++) s += '<ellipse cx="60" cy="40" rx="17" ry="21" fill="' + c2 + '" transform="rotate(' + (i * 45 + 20) + ' 60 60)"/>';
+    for (i = 0; i < 6; i++) s += '<ellipse cx="60" cy="49" rx="10" ry="13" fill="' + c3 + '" transform="rotate(' + (i * 60 + 5) + ' 60 60)"/>';
+    return s + '<circle cx="60" cy="60" r="7" fill="' + c3 + '"/></svg>';
+  }
+  function lily(c1, c2) {
+    var s = '<svg viewBox="0 0 120 120" width="W" height="H" xmlns="http://www.w3.org/2000/svg">', i;
+    for (i = 0; i < 6; i++) {
+      s += '<path d="M60 60 C46 40 50 14 60 4 C70 14 74 40 60 60Z" fill="' + c1 + '" transform="rotate(' + (i * 60) + ' 60 60)"/>';
+      s += '<path d="M60 56 L60 18" stroke="' + c2 + '" stroke-width="2" stroke-dasharray="2 4" transform="rotate(' + (i * 60) + ' 60 60)"/>';
+    }
+    for (i = 0; i < 6; i++) s += '<line x1="60" y1="60" x2="60" y2="38" stroke="#9a6b3a" stroke-width="1.5" transform="rotate(' + (i * 60 + 30) + ' 60 60)"/><circle cx="60" cy="37" r="2.8" fill="#b8562b" transform="rotate(' + (i * 60 + 30) + ' 60 60)"/>';
+    return s + '<circle cx="60" cy="60" r="6" fill="#bfe08a"/></svg>';
+  }
+  function leaf(c) {
+    return '<svg viewBox="0 0 60 100" width="W" height="H" xmlns="http://www.w3.org/2000/svg"><path d="M30 98 C4 70 6 26 30 2 C54 26 56 70 30 98Z" fill="' + c + '"/><path d="M30 96 L30 10" stroke="#5a8f69" stroke-width="2"/></svg>';
+  }
+  var F = {
+    lav: function () { return lavender("#9b7fd1", "#b9a1ea"); },
+    lav2: function () { return lavender("#7d62c4", "#a58ae0"); },
+    peo: function () { return peony("#f7a9c4", "#ec6f9a", "#d94f80"); },
+    peo2: function () { return peony("#ffd0de", "#ff9ebd", "#f2709a"); },
+    peo3: function () { return peony("#fde2c8", "#fbb98c", "#f08f5a"); },
+    lil: function () { return lily("#ffd56b", "#e89a1c"); },
+    lil2: function () { return lily("#ffffff", "#f39ab6"); },
+    lil3: function () { return lily("#ff9fb8", "#d9406f"); },
+    leaf: function () { return leaf("#8cc29b"); },
+    leaf2: function () { return leaf("#6fa77f"); }
+  };
+  function svgEl(key, w, h) {
+    var d = document.createElement("div");
+    d.innerHTML = F[key]().replace('width="W"', 'width="' + w + '"').replace('height="H"', 'height="' + h + '"');
+    return d.firstChild;
+  }
+
+  /* kenarlardaki çiçekler */
+  var garden = document.createElement("div");
+  garden.className = "garden"; garden.setAttribute("aria-hidden", "true");
+  document.body.prepend(garden);
+  [
+    ["peo", { left: -40, top: -30 }, 140], ["lav", { left: 70, top: -20 }, 42], ["lil2", { left: 20, top: 80 }, 70],
+    ["lil", { right: -30, top: -20 }, 115], ["peo2", { right: 60, top: 50 }, 80], ["lav2", { right: 18, top: -10 }, 40],
+    ["peo3", { left: -40, bottom: -30 }, 130], ["lil3", { left: 70, bottom: 30 }, 82], ["lav", { left: 14, bottom: -20 }, 46],
+    ["peo2", { right: -40, bottom: -30 }, 140], ["lil", { right: 70, bottom: 40 }, 76], ["lav2", { right: 112, bottom: -18 }, 44]
+  ].forEach(function (s, i) {
+    var k = innerWidth < 520 ? 0.62 : 1;
+    var isLav = s[0].indexOf("lav") === 0, sz = s[2] * k;
+    var el = svgEl(s[0], sz, isLav ? sz * 2.3 : sz);
+    Object.keys(s[1]).forEach(function (p) { el.style[p] = s[1][p] * k + "px"; });
+    el.style.opacity = ".92"; el.style.animationDelay = (-i * 0.7) + "s";
+    garden.appendChild(el);
+  });
+
+  /* büyük buket (sayfanın üst kısmında) */
+  document.querySelectorAll(".bouquet").forEach(function (b) {
+    var parts = [
+      ["leaf2", 8, 70, 50, 84, -40], ["leaf", 282, 70, 50, 84, 40],
+      ["lav", 40, 10, 44, 100, -18], ["lav2", 252, 6, 44, 100, 16], ["lav", 152, -14, 40, 92, 0],
+      ["peo2", 60, 62, 104, 104, 0], ["lil", 194, 64, 92, 92, 0],
+      ["peo", 116, 44, 112, 112, 0], ["lil2", 18, 108, 70, 70, 0], ["peo3", 256, 112, 72, 72, 0], ["lil3", 150, 128, 64, 64, 0]
+    ];
+    var scale = Math.min(1, b.clientWidth / 340, innerHeight < 700 ? 0.78 : 1);
+    b.style.height = 200 * scale + "px";
+    parts.forEach(function (p, i) {
+      var el = svgEl(p[0], p[3] * scale, p[4] * scale);
+      el.style.left = p[1] * scale + "px"; el.style.top = p[2] * scale + "px";
+      el.style.rotate = p[5] + "deg"; el.style.animationDelay = (i * 0.07) + "s, " + (1 + i * 0.2) + "s";
+      b.appendChild(el);
+    });
+  });
+
+  /* ilerleme noktaları */
+  var pr = document.querySelector(".progress");
+  if (pr) {
+    var step = +pr.dataset.step, total = +pr.dataset.total;
+    for (var i = 1; i <= total; i++) { var dot = document.createElement("i"); if (i < step) dot.className = "done"; if (i === step) dot.className = "now"; pr.appendChild(dot); }
+  }
+
+  /* ---------- yaprak yağmuru ---------- */
+  var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var cv = document.createElement("canvas"); cv.id = "petals"; document.body.appendChild(cv);
+  var ctx = cv.getContext("2d"), P = [], raf = null;
+  function fit() { var r = window.devicePixelRatio || 1; cv.width = innerWidth * r; cv.height = innerHeight * r; ctx.setTransform(r, 0, 0, r, 0, 0); }
+  fit(); addEventListener("resize", fit);
+  var cols = ["#9b7fd1", "#b9a1ea", "#ec6f9a", "#f7a9c4", "#ffd56b", "#ffffff", "#ff9ebd", "#fbb98c"];
+  function burst(n) {
+    if (reduce) return;
+    for (var i = 0; i < n; i++) P.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * 0.6, s: 6 + Math.random() * 9,
+      vy: 1.2 + Math.random() * 2.2, vx: -1 + Math.random() * 2, r: Math.random() * 6.28, vr: -0.06 + Math.random() * 0.12,
+      c: cols[(Math.random() * cols.length) | 0], w: Math.random() * 6.28 });
+    if (!raf) loop();
+  }
+  function loop() {
+    ctx.clearRect(0, 0, innerWidth, innerHeight);
+    P.forEach(function (p) {
+      p.w += 0.04; p.x += p.vx + Math.sin(p.w) * 0.8; p.y += p.vy; p.r += p.vr;
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.globalAlpha = 0.9;
+      ctx.beginPath(); ctx.ellipse(0, 0, p.s * 0.55, p.s, 0, 0, 6.28); ctx.fill(); ctx.restore();
+    });
+    P = P.filter(function (p) { return p.y < innerHeight + 30; });
+    raf = P.length ? requestAnimationFrame(loop) : null;
+  }
+
+  /* ---------- tek seçimli liste: seçince sonraki sayfa ---------- */
+  function choices(boxId, items, key, next) {
+    var box = $(boxId);
+    items.forEach(function (it) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "opt";
+      b.innerHTML = '<span class="ico" style="background:' + it.bg + '">' + it.ico + "</span><span><b>" + it.label + "</b><small>" + it.sub + "</small></span>";
+      if (state[key] === it.label) b.classList.add("on");
+      b.onclick = function () {
+        box.querySelectorAll(".opt").forEach(function (o) { o.classList.remove("on"); });
+        b.classList.add("on"); burst(25);
+        var add = {}; add[key] = it.label; setTimeout(function () { go(next, add); }, 350);
+      };
+      box.appendChild(b);
+    });
+  }
+
+  /* ================= SAYFALAR ================= */
+
+  /* 1 · Resmin hazır */
+  if (page === "hazir") {
+    var f = $("frame");
+    var tease = function () {
+      f.classList.remove("shake"); void f.offsetWidth; f.classList.add("shake");
+      setTimeout(function () { go("davet.html"); }, 600);
+    };
+    f.onclick = tease; $("open").onclick = tease;
+  }
+
+  /* 2 · Davet – Hayır demek mümkün değil */
+  if (page === "davet") {
+    var no = $("no"), yes = $("yes"), hint = $("hint"), n = 0;
+    var texts = ["Emin misin?", "Bir daha düşün", "Lavantalar üzüldü", "Şakayıklar soluyor", "Lilyumlar ağlıyor",
+      "Bu buton bozuk", "Yakalayamazsın", "Pes et artık", "Resim seni bekliyor", "Evet'e bas"];
+    var hints = ["", "", "Hmm, bu buton biraz utangaç.", "Evet butonu büyüyor, fark ettin mi?", "Hayır seçeneği bugün izinli.", "Bence işaret belli."];
+    function dodge(e) {
+      if (e) { e.preventDefault(); e.stopPropagation(); }
+      n++;
+      if (no.classList.contains("parked")) {
+        var r = no.getBoundingClientRect(); no.classList.remove("parked");
+        no.style.left = r.left + "px"; no.style.top = r.top + "px"; void no.offsetWidth;
+      }
+      no.textContent = texts[(n - 1) % texts.length];
+      var bw = no.offsetWidth, bh = no.offsetHeight, pad = 16;
+      var yr = yes.getBoundingClientRect(), x, y, tries = 0;
+      do {
+        x = pad + Math.random() * Math.max(0, innerWidth - bw - pad * 2);
+        y = pad + 40 + Math.random() * Math.max(0, innerHeight - bh - pad * 2 - 40);
+        tries++;
+      } while (tries < 20 && x < yr.right + 20 && x + bw > yr.left - 20 && y < yr.bottom + 20 && y + bh > yr.top - 20);
+      no.style.left = x + "px"; no.style.top = y + "px";
+      no.style.transform = "scale(" + Math.max(0.6, 1 - n * 0.04) + ") rotate(" + (Math.random() * 16 - 8) + "deg)";
+      yes.style.transform = "scale(" + Math.min(1.45, 1 + n * 0.06) + ")";
+      hint.textContent = hints[Math.min(n, hints.length - 1)];
+    }
+    no.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") dodge(e); });
+    no.addEventListener("pointerdown", dodge);
+    no.addEventListener("touchstart", dodge, { passive: false });
+    no.addEventListener("click", dodge);
+    no.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") dodge(e); });
+    yes.onclick = function () { burst(120); setTimeout(function () { go("tercih.html"); }, 650); };
+  }
+
+  /* 3 · Kahve mi yemek mi */
+  if (page === "tercih") {
+    document.querySelectorAll("[data-t]").forEach(function (b) {
+      b.onclick = function () { burst(40); var t = b.dataset.t; setTimeout(function () { go("secim.html", { t: t, m: "", s: "" }); }, 350); };
+    });
+  }
+
+  /* 4 · Menü */
+  if (page === "secim") {
+    var isK = state.t !== "yemek";
+    $("title").innerHTML = isK ? "Hangi <em>kahve</em> olsun?" : "Ne <em>yiyelim</em>?";
+    $("sub").textContent = isK ? "Kahve benden, sohbet senden." : "Canın ne çekiyorsa, hesap benden.";
+    choices("opts", isK ? [
+      { ico: "☕", bg: "#fff0c9", label: "Türk kahvesi", sub: "Falına da bakarız" },
+      { ico: "🥛", bg: "#efe7fb", label: "Latte / Cappuccino", sub: "Köpüğüne kalp çizdiririz" },
+      { ico: "🍰", bg: "#fdd9e6", label: "Kahve ve tatlı", sub: "Cheesecake'i paylaşırız" },
+      { ico: "🌊", bg: "#e3f1ee", label: "Sahilde kahve", sub: "Elimizde kahve, deniz kenarında yürüyüş" },
+      { ico: "🎁", bg: "#fff0c9", label: "Sen seç", sub: "Sürprize açığım" }
+    ] : [
+      { ico: "🍝", bg: "#fdd9e6", label: "İtalyan", sub: "Makarna ve pizza" },
+      { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Çubuklarla savaşırız" },
+      { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Yoğurtlu, sarımsaklı" },
+      { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Bol patatesli" },
+      { ico: "🎁", bg: "#efe7fb", label: "Sen seç", sub: "Sürprize açığım" }
+    ], "m", "gun.html");
+  }
+
+  /* 5 · Gün */
+  if (page === "gun") {
+    var box = $("days"), today = new Date();
+    for (var d = 1; d <= 14; d++) {
+      var dt = new Date(today); dt.setDate(today.getDate() + d);
+      var label = dt.toLocaleDateString("tr-TR", { day: "numeric", month: "long", weekday: "long" });
+      var b = document.createElement("button"); b.type = "button"; b.className = "day";
+      if (dt.getDay() === 0 || dt.getDay() === 6) b.classList.add("weekend");
+      if (state.g === label) b.classList.add("on");
+      b.innerHTML = "<small>" + dt.toLocaleDateString("tr-TR", { weekday: "short" }) + "</small><b>" + dt.getDate() + "</b><small>" + dt.toLocaleDateString("tr-TR", { month: "short" }) + "</small>";
+      b.dataset.label = label;
+      b.onclick = function () {
+        box.querySelectorAll(".day").forEach(function (o) { o.classList.remove("on"); });
+        this.classList.add("on"); burst(25);
+        var l = this.dataset.label; setTimeout(function () { go("saat.html", { g: l }); }, 350);
+      };
+      box.appendChild(b);
+    }
+  }
+
+  /* 6 · Saat */
+  if (page === "saat") {
+    choices("opts", state.t === "yemek" ? [
+      { ico: "🌤️", bg: "#fff0c9", label: "13:00", sub: "Güneşli bir öğle yemeği" },
+      { ico: "🌅", bg: "#fdd9e6", label: "19:00", sub: "Gün batarken" },
+      { ico: "🕯️", bg: "#efe7fb", label: "20:30", sub: "Mum ışığında akşam yemeği" }
+    ] : [
+      { ico: "🌸", bg: "#fdd9e6", label: "11:00", sub: "Güne kahveyle başlarız" },
+      { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Öğleden sonra keyfi" },
+      { ico: "🌅", bg: "#efe7fb", label: "17:30", sub: "Gün batımında kahve" }
+    ], "s", "not.html");
+  }
+
+  /* 7 · Not */
+  if (page === "not") {
+    var ta = $("note"); ta.value = state.n || "";
+    $("next").onclick = function () { go("bilet.html", { n: ta.value.trim() }); };
+    $("skip").onclick = function () { go("bilet.html", { n: "" }); };
+  }
+
+  /* 8 · Bilet */
+  if (page === "bilet") {
+    if (!state.t || !state.m || !state.g || !state.s) { location.replace("index.html"); return; }
+    var kind = state.t === "yemek" ? "Yemek" : "Kahve";
+    $("tKind").textContent = kind; $("tMenu").textContent = state.m;
+    $("tDay").textContent = state.g; $("tTime").textContent = state.s;
+    if (state.n) $("tNote").textContent = state.n; else $("tNoteRow").hidden = true;
+    var msg = "Ben Büşranur 🌸 Randevumuz var!\n" + kind + ": " + state.m + "\nGün: " + state.g + "\nSaat: " + state.s +
+      (state.n ? "\nNot: " + state.n : "") + "\nResmimi de getirmeyi unutma!";
+    /* Mesaj direkt bu numaraya gider */
+    var PHONE = "905318864491";
+    $("wa").href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg);
+    $("copy").onclick = function () {
+      var ok = function () { $("copyMsg").textContent = "Kopyalandı. Şimdi bana yapıştırıp gönderebilirsin."; };
+      var fail = function () { $("copyMsg").textContent = msg; };
+      try { navigator.clipboard.writeText(msg).then(ok, fail); } catch (e) { fail(); }
+    };
+    $("again").onclick = function () { go("tercih.html"); };
+    setTimeout(function () { $("frame").classList.add("open"); burst(180); }, 500);
+  }
+})();
