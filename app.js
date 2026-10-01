@@ -68,34 +68,41 @@
     return d.firstChild;
   }
 
-  /* kenarlardaki çiçekler */
+  /* kenarlardaki çiçekler: telefonda az ve küçük, içeriğin üstüne binmesin */
+  var phone = innerWidth < 520;
   var garden = document.createElement("div");
   garden.className = "garden"; garden.setAttribute("aria-hidden", "true");
   document.body.prepend(garden);
-  [
+  (phone ? [
+    ["peo2", { left: -34, top: -30 }, 84], ["lil", { right: -30, top: -26 }, 76],
+    ["peo3", { left: -30, bottom: -34 }, 78], ["lav", { left: 34, bottom: -40 }, 30],
+    ["peo", { right: -34, bottom: -34 }, 84], ["lav2", { right: 42, bottom: -40 }, 30]
+  ] : [
     ["peo", { left: -40, top: -30 }, 140], ["lav", { left: 70, top: -20 }, 42], ["lil2", { left: 20, top: 80 }, 70],
     ["lil", { right: -30, top: -20 }, 115], ["peo2", { right: 60, top: 50 }, 80], ["lav2", { right: 18, top: -10 }, 40],
     ["peo3", { left: -40, bottom: -30 }, 130], ["lil3", { left: 70, bottom: 30 }, 82], ["lav", { left: 14, bottom: -20 }, 46],
     ["peo2", { right: -40, bottom: -30 }, 140], ["lil", { right: 70, bottom: 40 }, 76], ["lav2", { right: 112, bottom: -18 }, 44]
-  ].forEach(function (s, i) {
-    var k = innerWidth < 520 ? 0.62 : 1;
-    var isLav = s[0].indexOf("lav") === 0, sz = s[2] * k;
+  ]).forEach(function (s, i) {
+    var isLav = s[0].indexOf("lav") === 0, sz = s[2];
     var el = svgEl(s[0], sz, isLav ? sz * 2.3 : sz);
-    Object.keys(s[1]).forEach(function (p) { el.style[p] = s[1][p] * k + "px"; });
-    el.style.opacity = ".92"; el.style.animationDelay = (-i * 0.7) + "s";
+    Object.keys(s[1]).forEach(function (p) { el.style[p] = s[1][p] + "px"; });
+    el.style.opacity = phone ? ".75" : ".92"; el.style.animationDelay = (-i * 0.7) + "s";
     garden.appendChild(el);
   });
 
-  /* büyük buket (sayfanın üst kısmında) */
+  /* üstteki buket: yan yana dizilmiş, birbirine girmeyen bir çelenk */
   document.querySelectorAll(".bouquet").forEach(function (b) {
     var parts = [
-      ["leaf2", 8, 70, 50, 84, -40], ["leaf", 282, 70, 50, 84, 40],
-      ["lav", 40, 10, 44, 100, -18], ["lav2", 252, 6, 44, 100, 16], ["lav", 152, -14, 40, 92, 0],
-      ["peo2", 60, 62, 104, 104, 0], ["lil", 194, 64, 92, 92, 0],
-      ["peo", 116, 44, 112, 112, 0], ["lil2", 18, 108, 70, 70, 0], ["peo3", 256, 112, 72, 72, 0], ["lil3", 150, 128, 64, 64, 0]
+      // [çiçek, sol, üst, genişlik, yükseklik, açı]
+      ["leaf2", 82, 6, 40, 68, -30], ["leaf", 218, 6, 40, 68, 30],
+      ["lav", 4, 14, 36, 84, -14], ["lav2", 300, 14, 36, 84, 14],
+      ["lil", 38, 52, 76, 76, 0], ["lil3", 226, 52, 76, 76, 0],
+      ["peo", 112, 22, 116, 116, 0],
+      ["lil2", 96, 118, 48, 48, 0], ["peo3", 198, 118, 48, 48, 0]
     ];
-    var scale = Math.min(1, b.clientWidth / 340, innerHeight < 700 ? 0.78 : 1);
-    b.style.height = 200 * scale + "px";
+    var scale = Math.min(1, b.clientWidth / 340);
+    if (innerHeight < 700) scale = Math.min(scale, 0.8);
+    b.style.height = 170 * scale + "px";
     parts.forEach(function (p, i) {
       var el = svgEl(p[0], p[3] * scale, p[4] * scale);
       el.style.left = p[1] * scale + "px"; el.style.top = p[2] * scale + "px";
@@ -272,8 +279,12 @@
     $("tKind").textContent = kind; $("tMenu").textContent = state.m;
     $("tDay").textContent = state.g; $("tTime").textContent = state.s;
     if (state.n) $("tNote").textContent = state.n; else $("tNoteRow").hidden = true;
-    var msg = "Ben Büşranur 🌸 Randevumuz var!\n" + kind + ": " + state.m + "\nGün: " + state.g + "\nSaat: " + state.s +
-      (state.n ? "\nNot: " + state.n : "") + "\nResmimi de getirmeyi unutma!";
+    var msg = "Davetini kabul ediyorum 🌸\n\n" +
+      (kind === "Kahve" ? "☕ " : "🍽️ ") + kind + ": " + state.m + "\n" +
+      "📅 " + state.g + "\n" +
+      "🕰️ " + state.s + "\n" +
+      (state.n ? "💌 " + state.n + "\n" : "") +
+      "\nResmimi de getirmeyi unutma 💐";
     /* Mesaj direkt bu numaraya gider */
     var PHONE = "905318864491";
     $("wa").href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg);

@@ -64,7 +64,7 @@ body[data-tone="lil"]{background:
 .progress i.now{width:26px;border-radius:99px;background:linear-gradient(90deg,var(--lavender),var(--peony),var(--lily));box-shadow:none}
 
 /* büyük buket */
-.bouquet{position:relative;width:min(100%,340px);height:200px;margin:0 auto -6px}
+.bouquet{position:relative;width:min(100%,340px);height:170px;margin:0 auto;flex:none}
 .bouquet svg{position:absolute;transform-origin:50% 90%;animation:bloom .9s cubic-bezier(.2,1.4,.4,1) both, sway 5s ease-in-out 1s infinite alternate}
 @keyframes bloom{from{transform:scale(0) rotate(-40deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
 
