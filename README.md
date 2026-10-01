@@ -12,7 +12,7 @@ Lavanta, şakayık ve lilyum temalı, sayfa sayfa ilerleyen flörtöz bir davet.
 7. `not.html` – Hazır kısa notlar + isteğe bağlı yazı
 8. `bilet.html` – Resim tamamen açılır (dokununca büyür) + randevu bileti + WhatsApp'tan gönder
 
-Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seçenekler), `resim.jpg` (resim).
+Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seçenekler), `resim.jpg` (resim), `onizleme.jpg` (Instagram/WhatsApp link önizleme görseli).
 
 ## GitHub Pages'te yayınlama
 1. GitHub'da yeni repo aç (ör. `resmin-teslimati`), **Public** olsun
@@ -25,4 +25,5 @@ Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seç
 - **Kahve / yemek çeşitleri:** `app.js` → `/* 4 · Menü */` bölümü
 - **Saatler:** `app.js` → `/* 6 · Saat */`
 - **Hayır butonunun yazıları:** `app.js` → `texts` listesi
+- **Link önizleme görseli:** sayfaların `<head>` kısmındaki `og:image` adresi `https://yecassistant.github.io/busranur/onizleme.jpg`. Repo adı farklıysa bu adresi düzelt.
 - **WhatsApp numarası:** `app.js` → `var PHONE = "905318864491"` (başında 90, + yok)

@@ -194,7 +194,7 @@
       var k = Math.min(n, 6);
       yes.style.fontSize = (1.08 + k * 0.05) + "rem";
       yes.style.padding = (15 + k * 1.4) + "px " + (30 + k * 2) + "px";
-      if (n >= 5) yes.textContent = "Evet, buluşalım\u00a0💖";
+      if (n >= 5) yes.textContent = "Evet, buluşalım\u00a0🌸";
       if (n >= 9) yes.textContent = "Evet, buluşalım\u00a0💐";
       if (n >= 12) { no.hidden = true; hint.textContent = "Hayır butonu kaçtı gitti. Geriye bir seçenek kaldı."; }
     }
@@ -243,8 +243,8 @@
     $("title").innerHTML = isK ? "Hangi <em>kahve</em> olsun?" : "Ne <em>yiyelim</em>?";
     $("sub").textContent = isK ? "Kahve benden, sohbet senden." : "Canın ne çekiyorsa, hesap benden.";
     choices("opts", isK ? [
-      { ico: "☕", bg: "#fff0c9", label: "Türk kahvesi", sub: "Falına da bakarız" },
-      { ico: "🥛", bg: "#efe7fb", label: "Latte / Cappuccino", sub: "Köpüğüne kalp çizdiririz" },
+      { ico: "☕", bg: "#fff0c9", label: "Türk kahvesi", sub: "Yanında lokumla" },
+      { ico: "🥛", bg: "#efe7fb", label: "Latte / Cappuccino", sub: "Bol köpüklü" },
       { ico: "🍰", bg: "#fdd9e6", label: "Kahve ve tatlı", sub: "Cheesecake'i paylaşırız" },
       { ico: "🌊", bg: "#e3f1ee", label: "Sahilde kahve", sub: "Elimizde kahve, deniz kenarında yürüyüş" },
       { ico: "🎁", bg: "#fff0c9", label: "Sen seç", sub: "Sürprize açığım" }
@@ -298,13 +298,13 @@
   /* 6 · Saat */
   if (page === "saat") {
     choices("opts", state.t === "yemek" ? [
-      { ico: "🌤️", bg: "#fff0c9", label: "13:00", sub: "Güneşli bir öğle yemeği" },
-      { ico: "🌅", bg: "#fdd9e6", label: "19:00", sub: "Gün batarken" },
-      { ico: "🕯️", bg: "#efe7fb", label: "20:30", sub: "Mum ışığında akşam yemeği" }
+      { ico: "🌤️", bg: "#fff0c9", label: "13:00", sub: "Öğle arası" },
+      { ico: "🏙️", bg: "#fdd9e6", label: "19:00", sub: "İş çıkışı" },
+      { ico: "🌙", bg: "#efe7fb", label: "20:30", sub: "Akşam yemeği, acelesiz" }
     ] : [
       { ico: "🌸", bg: "#fdd9e6", label: "11:00", sub: "Güne kahveyle başlarız" },
-      { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Öğleden sonra keyfi" },
-      { ico: "🌅", bg: "#efe7fb", label: "17:30", sub: "Gün batımında kahve" }
+      { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Öğleden sonra molası" },
+      { ico: "🏙️", bg: "#efe7fb", label: "18:00", sub: "İş çıkışı" }
     ], "s", "not.html");
     /* kendi saatini seçsin */
     var box = $("customBox"), inp = $("customTime");
@@ -346,7 +346,7 @@
       (kind === "Kahve" ? "☕ " : "🍽️ ") + kind + ": " + state.m + "\n" +
       "📅 " + state.g + "\n" +
       "🕰️ " + state.s + "\n" +
-      (state.n ? "💌 " + state.n + "\n" : "") +
+      (state.n ? "📝 " + state.n + "\n" : "") +
       "\nResmimi de getirmeyi unutma 🎨";
     /* Mesaj direkt bu numaraya gider */
     var PHONE = "905318864491";
@@ -360,6 +360,8 @@
     $("wa").addEventListener("click", function () {
       $("copyMsg").textContent = "WhatsApp açıldı. Gönder'e basmayı unutma, gerisi bende 😅";
     });
+    /* Instagram / Facebook içindeki tarayıcıda WhatsApp açılmayabilir */
+    if (/Instagram|FBAN|FBAV|FB_IAB/i.test(navigator.userAgent)) $("inapp").hidden = false;
     /* resme dokununca büyük bak */
     var lb = $("lightbox");
     $("frame").onclick = function () { lb.hidden = false; document.body.style.overflow = "hidden"; };
