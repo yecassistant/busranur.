@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Büşranur'un Resmi</title>
-<meta name="description" content="Büşranur, resmin hazır! Görmek için tıkla.">
+<meta name="description" content="Resmin hazır! Görmek için tıkla.">
 <meta property="og:title" content="Büşranur, resmin hazır!">
-<meta property="og:description" content="Sadece Büşranur için çizildi. Görmek için tıkla.">
+<meta property="og:description" content="Sadece senin için çizildi. Görmek için tıkla.">
+<meta name="color-scheme" content="light">
 <meta name="theme-color" content="#ec6f9a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&display=swap">
@@ -18,8 +20,15 @@
 <main class="stage">
   <div class="bouquet"></div>
   <h2>Bana söylemek istediğin <em>bir şey</em> var mı?</h2>
-  <p class="lead">Mesela: "çiçek getir", "geç kalma", "tatlı da isterim"…</p>
-  <label for="note" class="small">Notun (isteğe bağlı)</label>
+  <p class="lead">Şart koşabilirsin, itiraz etmem.</p>
+  <div class="quicks" aria-label="Hazır notlar">
+    <button type="button" class="quick" data-t="Çiçek getirme 😅">Çiçek getirme 😅</button>
+    <button type="button" class="quick" data-t="Geç kalma ⏰">Geç kalma ⏰</button>
+    <button type="button" class="quick" data-t="Tatlı da olsun 🍰">Tatlı da olsun 🍰</button>
+    <button type="button" class="quick" data-t="Yeri sen seç 📍">Yeri sen seç 📍</button>
+    <button type="button" class="quick" data-t="Fazla heyecanlanma 😅">Fazla heyecanlanma 😅</button>
+  </div>
+  <label for="note" class="small">Ya da kendin yaz (isteğe bağlı)</label>
   <textarea id="note" placeholder="Buraya yaz…"></textarea>
   <div class="btns">
     <button class="btn lav" id="next">Devam et</button>

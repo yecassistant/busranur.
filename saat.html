@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Büşranur'un Resmi</title>
-<meta name="description" content="Büşranur, resmin hazır! Görmek için tıkla.">
+<meta name="description" content="Resmin hazır! Görmek için tıkla.">
 <meta property="og:title" content="Büşranur, resmin hazır!">
-<meta property="og:description" content="Sadece Büşranur için çizildi. Görmek için tıkla.">
+<meta property="og:description" content="Sadece senin için çizildi. Görmek için tıkla.">
+<meta name="color-scheme" content="light">
 <meta name="theme-color" content="#ec6f9a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&display=swap">
@@ -18,9 +20,16 @@
 <main class="stage">
   <div class="bouquet"></div>
   <h2>Saat <em>kaçta</em>?</h2>
-  <p class="lead">Ben her saate hazırım, sen söyle.</p>
+  <p class="lead">Ben her saate hazırım, sen söyle. Metrobüs trafiğini de hesaba kat 😅</p>
   <div class="opts" id="opts"></div>
-  <div class="btns"><button class="btn link" onclick="history.back()">Geri dön</button></div>
+  <button type="button" class="opt" id="customToggle"><span class="ico" style="background:#e3f1ee">⏰</span><span><b>Başka bir saat</b><small>Sen söyle, ben ayarlarım</small></span></button>
+  <div class="customBox" id="customBox" hidden>
+    <label for="customTime" class="small" style="width:100%">Sana uyan saat</label>
+    <input type="time" id="customTime" step="300">
+    <button type="button" class="btn lav" id="customGo">Bu saat olsun</button>
+    <p class="hint" id="customHint"></p>
+  </div>
+  <div class="btns"><button type="button" class="btn link" data-back="gun.html">Geri dön</button></div>
 </main>
 <script src="app.js"></script>
 </body>

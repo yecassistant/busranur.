@@ -64,8 +64,11 @@
   };
   function svgEl(key, w, h) {
     var d = document.createElement("div");
-    d.innerHTML = F[key]().replace('width="W"', 'width="' + w + '"').replace('height="H"', 'height="' + h + '"');
-    return d.firstChild;
+    var img = new Image();
+    img.alt = ""; img.decoding = "async"; img.draggable = false;
+    img.width = Math.round(w); img.height = Math.round(h);
+    img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(F[key]().replace('width="W"', 'width="' + w + '"').replace('height="H"', 'height="' + h + '"'));
+    return img;
   }
 
   /* kenarlardaki çiçekler: telefonda az ve küçük, içeriğin üstüne binmesin */
@@ -111,6 +114,11 @@
     });
   });
 
+  /* geri dön butonları */
+  document.querySelectorAll("[data-back]").forEach(function (b) {
+    b.onclick = function () { go(b.dataset.back); };
+  });
+
   /* ilerleme noktaları */
   var pr = document.querySelector(".progress");
   if (pr) {
@@ -122,11 +130,17 @@
   var reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   var cv = document.createElement("canvas"); cv.id = "petals"; document.body.appendChild(cv);
   var ctx = cv.getContext("2d"), P = [], raf = null;
-  function fit() { var r = window.devicePixelRatio || 1; cv.width = innerWidth * r; cv.height = innerHeight * r; ctx.setTransform(r, 0, 0, r, 0, 0); }
+  function fit() {
+    var r = Math.min(window.devicePixelRatio || 1, 1.5);
+    cv.width = Math.round(innerWidth * r); cv.height = Math.round(innerHeight * r);
+    cv.style.width = innerWidth + "px"; cv.style.height = innerHeight + "px";
+    ctx.setTransform(r, 0, 0, r, 0, 0);
+  }
   fit(); addEventListener("resize", fit);
   var cols = ["#9b7fd1", "#b9a1ea", "#ec6f9a", "#f7a9c4", "#ffd56b", "#ffffff", "#ff9ebd", "#fbb98c"];
   function burst(n) {
     if (reduce) return;
+    if (innerWidth < 520) n = Math.round(n * 0.5);
     for (var i = 0; i < n; i++) P.push({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * 0.6, s: 6 + Math.random() * 9,
       vy: 1.2 + Math.random() * 2.2, vx: -1 + Math.random() * 2, r: Math.random() * 6.28, vr: -0.06 + Math.random() * 0.12,
       c: cols[(Math.random() * cols.length) | 0], w: Math.random() * 6.28 });
@@ -174,17 +188,29 @@
   /* 2 · Davet – Hayır demek mümkün değil */
   if (page === "davet") {
     var no = $("no"), yes = $("yes"), hint = $("hint"), n = 0;
-    var texts = ["Emin misin?", "Bir daha düşün", "Lavantalar üzüldü", "Şakayıklar soluyor", "Lilyumlar ağlıyor",
-      "Bu buton bozuk", "Yakalayamazsın", "Pes et artık", "Resim seni bekliyor", "Evet'e bas"];
-    var hints = ["", "", "Hmm, bu buton biraz utangaç.", "Evet butonu büyüyor, fark ettin mi?", "Hayır seçeneği bugün izinli.", "Bence işaret belli."];
+    var texts = ["Emin misin?", "Haydaa", "Bir daha düşün", "Lavantalar üzüldü", "Şakayıklar soluyor", "Lilyumlar ağlıyor",
+      "Estağfurullah", "Bu buton bozuk", "Yakalayamazsın", "Hanımefendi lütfen", "Pes et artık", "Evet'e bas"];
+    var hints = ["", "", "Hmm, bu buton biraz utangaç.", "Evet butonu büyüyor, fark ettin mi?", "Biraz fazla heyecanlıyım, biliyorum 😅", "Bence işaret belli."];
+    function growYes() {
+      /* her denemede azıcık büyür, en fazla ~1.6 kat */
+      var k = Math.min(n, 6);
+      yes.style.fontSize = (1.08 + k * 0.05) + "rem";
+      yes.style.padding = (15 + k * 1.4) + "px " + (30 + k * 2) + "px";
+      if (n >= 5) yes.textContent = "Evet, buluşalım\u00a0💖";
+      if (n >= 9) yes.textContent = "Evet, buluşalım\u00a0💐";
+      if (n >= 12) { no.hidden = true; hint.textContent = "Hayır butonu kaçtı gitti. Geriye bir seçenek kaldı."; }
+    }
+    var last = 0;
     function dodge(e) {
       if (e) { e.preventDefault(); e.stopPropagation(); }
+      var now = Date.now(); if (now - last < 300) return; last = now;
       n++;
       if (no.classList.contains("parked")) {
         var r = no.getBoundingClientRect(); no.classList.remove("parked");
         no.style.left = r.left + "px"; no.style.top = r.top + "px"; void no.offsetWidth;
       }
       no.textContent = texts[(n - 1) % texts.length];
+      try { if (navigator.vibrate) navigator.vibrate(18); } catch (err) {}
       var bw = no.offsetWidth, bh = no.offsetHeight, pad = 16;
       var yr = yes.getBoundingClientRect(), x, y, tries = 0;
       do {
@@ -194,13 +220,13 @@
       } while (tries < 20 && x < yr.right + 20 && x + bw > yr.left - 20 && y < yr.bottom + 20 && y + bh > yr.top - 20);
       no.style.left = x + "px"; no.style.top = y + "px";
       no.style.transform = "scale(" + Math.max(0.6, 1 - n * 0.04) + ") rotate(" + (Math.random() * 16 - 8) + "deg)";
-      yes.style.transform = "scale(" + Math.min(1.45, 1 + n * 0.06) + ")";
-      hint.textContent = hints[Math.min(n, hints.length - 1)];
+      growYes();
+      if (n < 12) hint.textContent = hints[Math.min(n, hints.length - 1)];
     }
     no.addEventListener("pointerenter", function (e) { if (e.pointerType === "mouse") dodge(e); });
     no.addEventListener("pointerdown", dodge);
     no.addEventListener("touchstart", dodge, { passive: false });
-    no.addEventListener("click", dodge);
+    no.addEventListener("click", function (e) { e.preventDefault(); e.stopPropagation(); });
     no.addEventListener("keydown", function (e) { if (e.key === "Enter" || e.key === " ") dodge(e); });
     yes.onclick = function () { burst(120); setTimeout(function () { go("tercih.html"); }, 650); };
   }
@@ -250,6 +276,24 @@
       };
       box.appendChild(b);
     }
+    /* kendi gününü seçsin */
+    var dbox = $("customBox"), dinp = $("customDate");
+    var pad2 = function (x) { return (x < 10 ? "0" : "") + x; };
+    var iso = function (dd) { return dd.getFullYear() + "-" + pad2(dd.getMonth() + 1) + "-" + pad2(dd.getDate()); };
+    var minD = new Date(today); minD.setDate(today.getDate() + 1);
+    var maxD = new Date(today); maxD.setDate(today.getDate() + 120);
+    dinp.min = iso(minD); dinp.max = iso(maxD);
+    $("customToggle").onclick = function () {
+      dbox.hidden = false; this.classList.add("on");
+      box.querySelectorAll(".day").forEach(function (o) { o.classList.remove("on"); });
+      try { dinp.focus(); if (dinp.showPicker) dinp.showPicker(); } catch (e) {}
+    };
+    $("customGo").onclick = function () {
+      if (!dinp.value) { $("customHint").textContent = "Önce bir gün seç."; return; }
+      var p = dinp.value.split("-"), dd = new Date(+p[0], +p[1] - 1, +p[2]);
+      var l = dd.toLocaleDateString("tr-TR", { day: "numeric", month: "long", weekday: "long" });
+      burst(25); setTimeout(function () { go("saat.html", { g: l }); }, 350);
+    };
   }
 
   /* 6 · Saat */
@@ -263,11 +307,31 @@
       { ico: "☀️", bg: "#fff0c9", label: "15:00", sub: "Öğleden sonra keyfi" },
       { ico: "🌅", bg: "#efe7fb", label: "17:30", sub: "Gün batımında kahve" }
     ], "s", "not.html");
+    /* kendi saatini seçsin */
+    var box = $("customBox"), inp = $("customTime");
+    if (state.s && /^\d\d:\d\d$/.test(state.s)) inp.value = state.s;
+    $("customToggle").onclick = function () {
+      box.hidden = false; this.classList.add("on");
+      $("opts").querySelectorAll(".opt").forEach(function (o) { o.classList.remove("on"); });
+      try { inp.focus(); if (inp.showPicker) inp.showPicker(); } catch (e) {}
+    };
+    $("customGo").onclick = function () {
+      if (!inp.value) { $("customHint").textContent = "Önce bir saat seç."; return; }
+      burst(25); var v = inp.value; setTimeout(function () { go("not.html", { s: v }); }, 350);
+    };
   }
 
   /* 7 · Not */
   if (page === "not") {
     var ta = $("note"); ta.value = state.n || "";
+    document.querySelectorAll(".quick").forEach(function (q) {
+      q.onclick = function () {
+        var t = q.dataset.t;
+        if (ta.value.indexOf(t) !== -1) return;
+        ta.value = (ta.value.trim() ? ta.value.trim() + " " : "") + t;
+        q.classList.add("on"); burst(12);
+      };
+    });
     $("next").onclick = function () { go("bilet.html", { n: ta.value.trim() }); };
     $("skip").onclick = function () { go("bilet.html", { n: "" }); };
   }
@@ -279,12 +343,12 @@
     $("tKind").textContent = kind; $("tMenu").textContent = state.m;
     $("tDay").textContent = state.g; $("tTime").textContent = state.s;
     if (state.n) $("tNote").textContent = state.n; else $("tNoteRow").hidden = true;
-    var msg = "Davetini kabul ediyorum 🌸\n\n" +
+    var msg = "Peki madem 😅 Davetini kabul ediyorum.\n\n" +
       (kind === "Kahve" ? "☕ " : "🍽️ ") + kind + ": " + state.m + "\n" +
       "📅 " + state.g + "\n" +
       "🕰️ " + state.s + "\n" +
       (state.n ? "💌 " + state.n + "\n" : "") +
-      "\nResmimi de getirmeyi unutma 💐";
+      "\nResmimi de getirmeyi unutma 🎨";
     /* Mesaj direkt bu numaraya gider */
     var PHONE = "905318864491";
     $("wa").href = "https://wa.me/" + PHONE + "?text=" + encodeURIComponent(msg);
@@ -294,6 +358,13 @@
       try { navigator.clipboard.writeText(msg).then(ok, fail); } catch (e) { fail(); }
     };
     $("again").onclick = function () { go("tercih.html"); };
+    $("wa").addEventListener("click", function () {
+      $("copyMsg").textContent = "WhatsApp açıldı. Gönder'e basmayı unutma, gerisi bende 😅";
+    });
+    /* resme dokununca büyük bak */
+    var lb = $("lightbox");
+    $("frame").onclick = function () { lb.hidden = false; document.body.style.overflow = "hidden"; };
+    lb.onclick = function () { lb.hidden = true; document.body.style.overflow = ""; };
     setTimeout(function () { $("frame").classList.add("open"); burst(180); }, 500);
   }
 })();

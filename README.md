@@ -7,10 +7,10 @@ Lavanta, şakayık ve lilyum temalı, sayfa sayfa ilerleyen flörtöz bir davet.
 2. `davet.html` – "Bu resim elden teslim edilir… Benimle buluşur musun?" (Hayır butonu kaçar, tıklanamaz)
 3. `tercih.html` – Kahve mi, yemek mi?
 4. `secim.html` – Kahve / yemek çeşidi
-5. `gun.html` – Gün seçimi (önümüzdeki 14 gün)
-6. `saat.html` – Saat seçimi
-7. `not.html` – İsteğe bağlı not
-8. `bilet.html` – Resim tamamen açılır + randevu bileti + WhatsApp'tan gönder
+5. `gun.html` – Gün seçimi (önümüzdeki 14 gün + takvimden "Başka bir gün")
+6. `saat.html` – Saat seçimi (hazır saatler + "Başka bir saat")
+7. `not.html` – Hazır kısa notlar + isteğe bağlı yazı
+8. `bilet.html` – Resim tamamen açılır (dokununca büyür) + randevu bileti + WhatsApp'tan gönder
 
 Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seçenekler), `resim.jpg` (resim).
 

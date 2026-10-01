@@ -4,10 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Büşranur'un Resmi</title>
-<meta name="description" content="Büşranur, resmin hazır! Görmek için tıkla.">
+<meta name="description" content="Resmin hazır! Görmek için tıkla.">
 <meta property="og:title" content="Büşranur, resmin hazır!">
-<meta property="og:description" content="Sadece Büşranur için çizildi. Görmek için tıkla.">
+<meta property="og:description" content="Sadece senin için çizildi. Görmek için tıkla.">
+<meta name="color-scheme" content="light">
 <meta name="theme-color" content="#ec6f9a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&family=Nunito:wght@600;700;800&family=Caveat:wght@600;700&display=swap">
@@ -17,11 +19,11 @@
 
 <main class="stage">
   <div class="eyebrow">anlaştık o zaman</div>
-  <h2>İşte resmin, <em>Büşranur</em></h2>
-  <div class="frame" id="frame"><img src="resim.jpg" alt="Senin için çizilen resim"></div>
+  <h2>İşte <em>senin</em> resmin</h2>
+  <div class="frame" id="frame" role="button" tabindex="0" aria-label="Resme büyük bak"><img src="resim.jpg" alt="Senin için çizilen resim"></div>
+  <p class="small">Büyütmek için resme dokun</p>
   <div class="ticket">
-    <h3>Büşranur'un Randevu Bileti</h3>
-    <div class="row"><span>Davetli</span><span>Büşranur</span></div>
+    <h3>Randevu Bileti</h3>
     <div class="row"><span>Buluşma</span><span id="tKind"></span></div>
     <div class="row"><span>Menü</span><span id="tMenu"></span></div>
     <div class="row"><span>Gün</span><span id="tDay"></span></div>
@@ -29,7 +31,7 @@
     <div class="row" id="tNoteRow"><span>Not</span><span id="tNote"></span></div>
     <div class="row"><span>Teslimat</span><span>Resmin aslı, elden</span></div>
   </div>
-  <p class="sign">Görüşmek üzere</p>
+  <p class="sign">Görüşmek üzere 🌸</p>
   <div class="btns" id="bilet-btns">
     <a class="btn green" id="wa" target="_blank" rel="noopener">WhatsApp'tan gönder</a>
     <button class="btn ghost" id="copy">Metni kopyala</button>
@@ -37,6 +39,10 @@
   <p class="small" id="copyMsg">Butona basınca bilet WhatsApp'tan bana gelir.</p>
   <div class="btns"><button class="btn link" id="again">Planı değiştir</button></div>
 </main>
+<div class="lightbox" id="lightbox" hidden>
+  <img src="resim.jpg" alt="Senin için çizilen resim">
+  <p>Kapatmak için dokun</p>
+</div>
 <script src="app.js"></script>
 </body>
 </html>
