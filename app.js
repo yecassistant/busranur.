@@ -188,7 +188,7 @@
     var no = $("no"), yes = $("yes"), hint = $("hint"), n = 0;
     var texts = ["Emin misin?", "Haydaa", "Bir daha düşün", "Lavantalar üzüldü", "Şakayıklar soluyor", "Lilyumlar ağlıyor",
       "Estağfurullah", "Bu buton bozuk", "Yakalayamazsın", "Hanımefendi lütfen", "Pes et artık", "Evet'e bas"];
-    var hints = ["", "", "Hmm, bu buton biraz utangaç.", "Evet butonu büyüyor, fark ettin mi?", "Biraz fazla heyecanlıyım, biliyorum 😅", "Bence işaret belli."];
+    var hints = ["", "Dedim ya, görmüyorum 😅", "Hmm, bu buton biraz utangaç.", "Evet butonu büyüyor, fark ettin mi?", "Biraz fazla heyecanlıyım, biliyorum 😅", "Bence işaret belli."];
     function growYes() {
       /* her denemede azıcık büyür, en fazla ~1.6 kat */
       var k = Math.min(n, 6);
@@ -385,23 +385,37 @@
        Kodu değiştirmek için sadece bu satırı değiştir (büyük/küçük harf ve boşluk fark etmez): */
     var CODE = "LAVANTA26";
 
-    /* filigran: en sevdiği çiçeklerden (lavanta, şakayık, lilyum) örülü bir örtü */
-    function tile(key, x, y, w, h, rot) {
-      var s = F[key]().replace('width="W"', 'width="' + w + '"').replace('height="H"', 'height="' + h + '"');
-      s = s.replace('<svg ', '<svg x="' + x + '" y="' + y + '" ');
-      return rot ? '<g transform="rotate(' + rot + ' ' + (x + w / 2) + ' ' + (y + h / 2) + ')">' + s + '</g>' : s;
+    /* filigran: en sevdiği çiçeklerden (lavanta, şakayık, lilyum) örülü bir örtü.
+       Kenar çiçekleriyle aynı yöntem (tek tek <img>), her tarayıcıda görünür. */
+    function fillFlowers(box) {
+      var W = box.clientWidth, H = box.clientHeight;
+      if (!W || !H) return;
+      box.innerHTML = "";
+      var keys = ["peo", "lil", "lav", "peo2", "lil2", "lav2", "peo3", "lil3", "peo", "lil", "leaf", "leaf2"];
+      var step = Math.max(46, Math.round(W / 4.6));
+      var seed = 11;
+      function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+      for (var y = -step * 0.35; y < H; y += step * 0.92) {
+        for (var x = -step * 0.35; x < W; x += step * 0.92) {
+          var k = keys[Math.floor(rnd() * keys.length)];
+          var isLav = k.indexOf("lav") === 0, isLeaf = k.indexOf("leaf") === 0;
+          var s = step * (0.8 + rnd() * 0.45);
+          var w = isLav ? s * 0.42 : isLeaf ? s * 0.5 : s, h = isLav ? s : isLeaf ? s * 0.85 : s;
+          var el = svgEl(k, w, h);
+          el.style.left = (x + rnd() * step * 0.35) + "px"; el.style.top = (y + rnd() * step * 0.35) + "px";
+          el.style.transform = "rotate(" + Math.round(rnd() * 60 - 30) + "deg)";
+          box.appendChild(el);
+        }
+      }
+      box.dataset.w = W;
     }
-    var pattern = '<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220">' +
-      tile("leaf", 96, 2, 26, 46, -35) + tile("leaf2", 200, 150, 26, 46, 30) +
-      tile("peo", 4, 4, 92, 92, 0) + tile("lil", 118, 10, 80, 80, 12) +
-      tile("lav", 66, 98, 34, 80, -12) + tile("lav2", 184, 84, 30, 70, 14) +
-      tile("lil2", 128, 128, 72, 72, -8) + tile("peo3", 8, 130, 62, 62, 0) +
-      tile("lil3", 40, 180, 40, 40, 20) + tile("peo2", 150, 196, 44, 44, 0) +
-      tile("lil3", 102, 76, 42, 42, -15) + tile("peo2", 90, 166, 46, 46, 0) +
-      '</svg>';
-    document.querySelectorAll(".wm").forEach(function (w) {
-      w.style.backgroundImage = 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(pattern) + '")';
-    });
+    var wmFrame = document.querySelector("#frame .wm"), wmLb = document.querySelector("#lightbox .wm");
+    fillFlowers(wmFrame);
+    addEventListener("resize", function () { if (wmFrame.dataset.w != wmFrame.clientWidth) fillFlowers(wmFrame); });
+    var lbImg = document.querySelector("#lightbox img");
+    function fillLb() { setTimeout(function () { fillFlowers(wmLb); }, 60); }
+    $("frame").addEventListener("click", fillLb);
+    if (lbImg.complete) {} else lbImg.addEventListener("load", function () { if (!lb.hidden) fillLb(); });
     function norm(s) {
       return String(s || "").replace(/İ/g, "i").replace(/I/g, "ı").toLowerCase().replace(/[\s\-_.]/g, "");
     }
@@ -412,8 +426,9 @@
       "Bu da değil. Kod bende, bilet sende; takas yapalım 😅",
       "Pes etme ama kodu da bir bana sor 😅"
     ];
-    var tries = 0, free = false;
-    try { free = localStorage.getItem("bn_free") === "1"; } catch (e) {}
+    var tries = 0;
+    /* Kod hatırlanmaz: sayfa her açıldığında çiçekler yerinde, kod yeniden istenir */
+    try { sessionStorage.removeItem("bn_free"); localStorage.removeItem("bn_free"); } catch (e) {}
     function unlock(celebrate) {
       $("frame").classList.add("free"); lb.classList.add("free");
       $("codebox").classList.add("done");
@@ -421,10 +436,9 @@
       $("codeText").textContent = "Resim artık tamamen senin. Resme uzun basıp kaydedebilirsin; aslını da elden getiriyorum.";
       $("coderow").hidden = true; $("steps").hidden = true; $("codeHint").textContent = "";
       $("lock").hidden = true; $("lbHint").textContent = "Kapatmak için dokun";
-      try { localStorage.setItem("bn_free", "1"); } catch (e) {}
+      $("toTicket2").hidden = false;
       if (celebrate) burst(200);
     }
-    if (free) unlock(false);
     function check() {
       var v = norm($("code").value);
       if (!v) { $("codeHint").textContent = "Önce kodu yaz. Kod bende, bileti gönderince geliyor 😅"; return; }
@@ -435,6 +449,34 @@
       var cb = $("codebox"); cb.classList.remove("shake"); void cb.offsetWidth; cb.classList.add("shake");
     }
     $("codeGo").onclick = check;
-    $("code").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); check(); } });
+    $("code").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("code").blur(); check(); } });
+
+    /* bilete git */
+    var ticket = $("ticket"), pill = $("ticketPill");
+    function toTicket() {
+      try { ticket.scrollIntoView({ behavior: "smooth", block: "start" }); } catch (e) { ticket.scrollIntoView(); }
+    }
+    $("toTicket").onclick = toTicket; $("toTicket2").onclick = toTicket; pill.onclick = toTicket;
+    /* bilet ekranın altında kaldığı sürece "Biletin aşağıda" rozeti görünsün */
+    function pillCheck() {
+      var r = ticket.getBoundingClientRect();
+      var show = r.top > innerHeight - 90;
+      if (show) {
+        /* rozet, kod kutusundaki alan ya da butonların üstüne binecekse gizle */
+        var pr = pill.getBoundingClientRect(), dy = pill.classList.contains("show") ? 0 : 90;
+        var pt = pr.top - dy, pb = pr.bottom - dy;
+        ["code", "codeGo", "toTicket2"].forEach(function (id) {
+          var el = $(id); if (!el || el.hidden) return;
+          var c = el.getBoundingClientRect();
+          if (c.width && pr.left < c.right && pr.right > c.left && pt < c.bottom && pb > c.top) show = false;
+        });
+      }
+      if (show) pill.classList.add("show"); else pill.classList.remove("show");
+    }
+    pillCheck(); setTimeout(pillCheck, 400);
+    addEventListener("scroll", pillCheck, { passive: true }); addEventListener("resize", pillCheck);
+    /* klavye açıkken rozet butonun üstüne binmesin */
+    $("code").addEventListener("focus", function () { pill.classList.remove("show"); });
+    $("code").addEventListener("blur", function () { setTimeout(pillCheck, 250); });
   }
 })();

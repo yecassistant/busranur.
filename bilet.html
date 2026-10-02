@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Büşranur'un Resmi</title>
 <meta name="description" content="Resmin hazır! Görmek için tıkla.">
 <meta property="og:title" content="Büşranur, resmin hazır!">
@@ -34,20 +34,21 @@
 
   <div class="codebox" id="codebox">
     <h3 id="codeTitle">Çiçekler ne alaka? 🙄</h3>
-    <p id="codeText">Lavanta, şakayık, lilyum: en sevdiklerin, resmi şimdilik koruyor. Çekilmeleri için küçük bir kod lazım. Biraz bürokratik oldu, biliyorum; ama böylece bileti göndermeyi unutmuyorsun 😅</p>
+    <p id="codeText">Lavanta, şakayık, lilyum: en sevdiklerin, resmi şimdilik koruyor. Çekilmeleri için küçük bir kod lazım 😅</p>
     <ol class="steps" id="steps">
-      <li><span>1</span><div>Aşağıdaki bileti <b>WhatsApp'tan bana gönder</b></div></li>
+      <li><span>1</span><div>Aşağıdaki bileti <b>WhatsApp'tan bana gönder</b> <button type="button" class="mini" id="toTicket">Bilete git ↓</button></div></li>
       <li><span>2</span><div>Ben sana <b>kodu</b> yazayım</div></li>
       <li><span>3</span><div>Kodu buraya gir, çiçekler çekilsin</div></li>
     </ol>
     <div class="coderow" id="coderow">
-      <input type="text" id="code" placeholder="Kod" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="24" aria-label="Kod">
+      <input type="text" id="code" placeholder="Kodu buraya yaz" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="24" aria-label="Kod" enterkeyhint="done">
       <button type="button" class="btn lav" id="codeGo">Çiçekleri çek</button>
     </div>
     <p class="hint" id="codeHint"></p>
+    <div class="btns" style="min-height:0"><button type="button" class="btn ghost" id="toTicket2" hidden>Bilete git ↓</button></div>
   </div>
 
-  <div class="ticket">
+  <div class="ticket" id="ticket">
     <h3>Randevu Bileti</h3>
     <div class="row"><span>Buluşma</span><span id="tKind"></span></div>
     <div class="row"><span>Menü</span><span id="tMenu"></span></div>
@@ -65,6 +66,7 @@
   <p class="small" id="inapp" hidden>WhatsApp açılmazsa sağ üstteki ⋯ menüsünden "Safari'de aç"a dokun ya da metni kopyalayıp bana gönder.</p>
   <div class="btns"><button class="btn link" id="again">Planı değiştir</button></div>
 </main>
+<button type="button" class="ticketPill" id="ticketPill">🎟️ Biletin aşağıda ↓</button>
 <div class="lightbox" id="lightbox" hidden>
   <div class="lbwrap">
     <img src="resim.jpg" alt="Senin için çizilen resim">

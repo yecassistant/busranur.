@@ -15,10 +15,10 @@ Lavanta, şakayık ve lilyum temalı, sayfa sayfa ilerleyen flörtöz bir davet.
 Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seçenekler), `resim.jpg` (resim), `onizleme.jpg` (Instagram/WhatsApp link önizleme görseli).
 
 ## GitHub Pages'te yayınlama
-1. GitHub'da yeni repo aç (ör. `resmin-teslimati`), **Public** olsun
+1. GitHub'da yeni repo aç (adı `busranur`), **Public** olsun
 2. Bu klasördeki tüm dosyaları repoya yükle (Add file → Upload files)
 3. Settings → Pages → Branch: `main` / `(root)` → Save
-4. Link: `https://KULLANICIADIN.github.io/resmin-teslimati/`
+4. Link: `https://yecassistant.github.io/busranur/`
 
 ## Değiştirmek istersen
 - **Resim:** `resim.jpg`'yi aynı isimle kendi çizimin ile değiştir (dikey, 3:4 ideal)
@@ -26,5 +26,5 @@ Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seç
 - **Saatler:** `app.js` → `/* 6 · Saat */`
 - **Hayır butonunun yazıları:** `app.js` → `texts` listesi
 - **Link önizleme görseli:** sayfaların `<head>` kısmındaki `og:image` adresi `https://yecassistant.github.io/busranur/onizleme.jpg`. Repo adı farklıysa bu adresi düzelt.
-- **Çiçek filigranı kodu:** `app.js` → `var CODE = "LAVANTA26"` satırı. Büyük/küçük harf, boşluk ve tire fark etmez. Kodu girince telefonunda hatırlanır; tekrar sormaz.
+- **Çiçek filigranı kodu:** `app.js` → `var CODE = "LAVANTA26"` satırı. Büyük/küçük harf, boşluk ve tire fark etmez. Kod hatırlanmaz: sayfa her açıldığında çiçekler yerindedir ve kod yeniden istenir.
 - **WhatsApp numarası:** `app.js` → `var PHONE = "905318864491"` (başında 90, + yok)
