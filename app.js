@@ -241,7 +241,7 @@
     if (!state.t) state.t = "kahve";
     var isK = state.t !== "yemek";
     $("title").innerHTML = isK ? "Hangi <em>kahve</em> olsun?" : "Ne <em>yiyelim</em>?";
-    $("sub").textContent = isK ? "Kahve benden, sohbet senden." : "Canın ne çekiyorsa, hesap benden.";
+    $("sub").textContent = isK ? "Sen seç, ben uyarım." : "Canın ne çekiyorsa, oraya gideriz.";
     choices("opts", isK ? [
       { ico: "☕", bg: "#fff0c9", label: "Türk kahvesi", sub: "Yanında lokumla" },
       { ico: "🥛", bg: "#efe7fb", label: "Latte / Cappuccino", sub: "Bol köpüklü" },
@@ -250,9 +250,9 @@
       { ico: "🎁", bg: "#fff0c9", label: "Sen seç", sub: "Sürprize açığım" }
     ] : [
       { ico: "🍝", bg: "#fdd9e6", label: "İtalyan", sub: "Makarna ve pizza" },
-      { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Çubuklarla savaşırız" },
-      { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Yoğurtlu, sarımsaklı" },
-      { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Bol patatesli" },
+      { ico: "🍣", bg: "#efe7fb", label: "Sushi", sub: "Çubuk kullanmayı öğrenirim" },
+      { ico: "🥟", bg: "#fff0c9", label: "Ev usulü mantı", sub: "Sıcacık, klasik" },
+      { ico: "🍔", bg: "#fdd9e6", label: "Burger", sub: "Patatesi paylaşırız" },
       { ico: "🎁", bg: "#efe7fb", label: "Sen seç", sub: "Sürprize açığım" }
     ], "m", "gun.html");
   }
@@ -323,12 +323,24 @@
   /* 7 · Not */
   if (page === "not") {
     var ta = $("note"); ta.value = state.n || "";
-    document.querySelectorAll(".quick").forEach(function (q) {
+    var quicks = document.querySelectorAll(".quick");
+    /* hangi hazır notlar metinde var: işaretli göster */
+    function syncQuicks() {
+      quicks.forEach(function (q) { q.classList.toggle("on", ta.value.indexOf(q.dataset.t) !== -1); });
+    }
+    function tidy(s) { return s.replace(/\s{2,}/g, " ").trim(); }
+    syncQuicks();
+    ta.addEventListener("input", syncQuicks);
+    quicks.forEach(function (q) {
       q.onclick = function () {
         var t = q.dataset.t;
-        if (ta.value.indexOf(t) !== -1) return;
-        ta.value = (ta.value.trim() ? ta.value.trim() + " " : "") + t;
-        q.classList.add("on"); burst(12);
+        if (ta.value.indexOf(t) !== -1) {
+          /* zaten ekli: kaldır */
+          ta.value = tidy(ta.value.split(t).join(" "));
+        } else {
+          ta.value = tidy(ta.value + " " + t); burst(12);
+        }
+        syncQuicks();
       };
     });
     $("next").onclick = function () { go("bilet.html", { n: ta.value.trim() }); };
@@ -358,7 +370,7 @@
     };
     $("again").onclick = function () { go("tercih.html"); };
     $("wa").addEventListener("click", function () {
-      $("copyMsg").textContent = "WhatsApp açıldı. Gönder'e basmayı unutma, gerisi bende 😅";
+      $("copyMsg").textContent = "WhatsApp açıldı. Gönder'e basmayı unutma; kod gelince yukarıdaki kutuya yaz 😅";
     });
     /* Instagram / Facebook içindeki tarayıcıda WhatsApp açılmayabilir */
     if (/Instagram|FBAN|FBAV|FB_IAB/i.test(navigator.userAgent)) $("inapp").hidden = false;
@@ -367,5 +379,62 @@
     $("frame").onclick = function () { lb.hidden = false; document.body.style.overflow = "hidden"; };
     lb.onclick = function () { lb.hidden = true; document.body.style.overflow = ""; };
     setTimeout(function () { $("frame").classList.add("open"); burst(180); }, 500);
+
+    /* ---------- filigran ve kod ----------
+       Bilet sana gelince ona bu kodu veriyorsun; kodu girince filigran kalkıyor.
+       Kodu değiştirmek için sadece bu satırı değiştir (büyük/küçük harf ve boşluk fark etmez): */
+    var CODE = "LAVANTA26";
+
+    /* filigran: en sevdiği çiçeklerden (lavanta, şakayık, lilyum) örülü bir örtü */
+    function tile(key, x, y, w, h, rot) {
+      var s = F[key]().replace('width="W"', 'width="' + w + '"').replace('height="H"', 'height="' + h + '"');
+      s = s.replace('<svg ', '<svg x="' + x + '" y="' + y + '" ');
+      return rot ? '<g transform="rotate(' + rot + ' ' + (x + w / 2) + ' ' + (y + h / 2) + ')">' + s + '</g>' : s;
+    }
+    var pattern = '<svg xmlns="http://www.w3.org/2000/svg" width="220" height="220">' +
+      tile("leaf", 96, 2, 26, 46, -35) + tile("leaf2", 200, 150, 26, 46, 30) +
+      tile("peo", 4, 4, 92, 92, 0) + tile("lil", 118, 10, 80, 80, 12) +
+      tile("lav", 66, 98, 34, 80, -12) + tile("lav2", 184, 84, 30, 70, 14) +
+      tile("lil2", 128, 128, 72, 72, -8) + tile("peo3", 8, 130, 62, 62, 0) +
+      tile("lil3", 40, 180, 40, 40, 20) + tile("peo2", 150, 196, 44, 44, 0) +
+      tile("lil3", 102, 76, 42, 42, -15) + tile("peo2", 90, 166, 46, 46, 0) +
+      '</svg>';
+    document.querySelectorAll(".wm").forEach(function (w) {
+      w.style.backgroundImage = 'url("data:image/svg+xml;charset=utf-8,' + encodeURIComponent(pattern) + '")';
+    });
+    function norm(s) {
+      return String(s || "").replace(/İ/g, "i").replace(/I/g, "ı").toLowerCase().replace(/[\s\-_.]/g, "");
+    }
+    var wrongs = [
+      "Yanlış kod. Tahmin etmeye çalışıyorsun, belli 😅",
+      "Olmadı. Bileti gerçekten gönderdin mi?",
+      "Hâlâ yanlış. Kodu uyduruyorsun, biliyorum 😅",
+      "Bu da değil. Kod bende, bilet sende; takas yapalım 😅",
+      "Pes etme ama kodu da bir bana sor 😅"
+    ];
+    var tries = 0, free = false;
+    try { free = localStorage.getItem("bn_free") === "1"; } catch (e) {}
+    function unlock(celebrate) {
+      $("frame").classList.add("free"); lb.classList.add("free");
+      $("codebox").classList.add("done");
+      $("codeTitle").textContent = "Çiçekler çekildi 🎉";
+      $("codeText").textContent = "Resim artık tamamen senin. Resme uzun basıp kaydedebilirsin; aslını da elden getiriyorum.";
+      $("coderow").hidden = true; $("steps").hidden = true; $("codeHint").textContent = "";
+      $("lock").hidden = true; $("lbHint").textContent = "Kapatmak için dokun";
+      try { localStorage.setItem("bn_free", "1"); } catch (e) {}
+      if (celebrate) burst(200);
+    }
+    if (free) unlock(false);
+    function check() {
+      var v = norm($("code").value);
+      if (!v) { $("codeHint").textContent = "Önce kodu yaz. Kod bende, bileti gönderince geliyor 😅"; return; }
+      if (v === norm(CODE)) { unlock(true); return; }
+      tries++;
+      $("codeHint").textContent = wrongs[Math.min(tries - 1, wrongs.length - 1)];
+      $("code").value = "";
+      var cb = $("codebox"); cb.classList.remove("shake"); void cb.offsetWidth; cb.classList.add("shake");
+    }
+    $("codeGo").onclick = check;
+    $("code").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); check(); } });
   }
 })();

@@ -10,7 +10,7 @@ Lavanta, şakayık ve lilyum temalı, sayfa sayfa ilerleyen flörtöz bir davet.
 5. `gun.html` – Gün seçimi (önümüzdeki 14 gün + takvimden "Başka bir gün")
 6. `saat.html` – Saat seçimi (hazır saatler + "Başka bir saat")
 7. `not.html` – Hazır kısa notlar + isteğe bağlı yazı
-8. `bilet.html` – Resim tamamen açılır (dokununca büyür) + randevu bileti + WhatsApp'tan gönder
+8. `bilet.html` – Resim açılır ama üstü **çiçek filigranlı** (lavanta, şakayık, lilyum); randevu bileti + WhatsApp'tan gönder. Bilet sana gelince ona kodu verirsin, kodu girince çiçekler çekilir.
 
 Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seçenekler), `resim.jpg` (resim), `onizleme.jpg` (Instagram/WhatsApp link önizleme görseli).
 
@@ -26,4 +26,5 @@ Ortak dosyalar: `style.css` (tasarım), `app.js` (çiçekler, animasyonlar, seç
 - **Saatler:** `app.js` → `/* 6 · Saat */`
 - **Hayır butonunun yazıları:** `app.js` → `texts` listesi
 - **Link önizleme görseli:** sayfaların `<head>` kısmındaki `og:image` adresi `https://yecassistant.github.io/busranur/onizleme.jpg`. Repo adı farklıysa bu adresi düzelt.
+- **Çiçek filigranı kodu:** `app.js` → `var CODE = "LAVANTA26"` satırı. Büyük/küçük harf, boşluk ve tire fark etmez. Kodu girince telefonunda hatırlanır; tekrar sormaz.
 - **WhatsApp numarası:** `app.js` → `var PHONE = "905318864491"` (başında 90, + yok)
